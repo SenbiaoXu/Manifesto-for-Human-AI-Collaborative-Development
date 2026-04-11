@@ -82,10 +82,11 @@ This workflow is **strictly sequential**. Do not proceed to the next phase until
 1. **For each BDD scenario**, verify that the implementation satisfies the scenario.
    Read `references/verification-guide.md` in this skill's directory for detailed strategies.
 
-2. **Verification priority** (use the most appropriate method):
-   - Run existing tests that cover the scenario → Record the output as evidence
-   - Write and run new targeted tests → Record test commands and output
-   - Code path tracing → Record what was checked and which code lines were involved
+2. **Verification priority** (use the highest-quality method available, see the Evidence Quality Hierarchy in `references/verification-guide.md`):
+   - **First choice**: Run existing tests or write and run new targeted tests → Record test commands and full output
+   - **Second choice**: Run verification commands, invoke tools (MCP/Skill), or execute scripts → Record commands and results
+   - **Third choice**: Observe runtime behavior (HTTP responses, file changes, process status) → Record observed outcomes
+   - **Last resort only**: Code review with justification — must explain why no executable evidence was obtainable and describe specific behavior, NOT just line number ranges
 
 3. **Record results**: For each scenario, mark pass/fail with evidence.
 

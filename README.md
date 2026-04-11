@@ -51,7 +51,7 @@ We follow these principles:
 
 ## Practical Examples
 
-The `skills` folder in this project contains several skills that demonstrate how to translate the values and ten principles of the *Human-AI Collaborative Development Manifesto* into executable workflows.
+The `skills` folder in this project contains several skills(in conjunction with the rules in the `rules` folder) that demonstrate how to translate the values and ten principles of the *Human-AI Collaborative Development Manifesto* into executable workflows.
 
 > Note: You can add details on top of them to better fit your project.
 

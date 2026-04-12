@@ -1,30 +1,33 @@
-# Manifesto-for-Human-AI-Collaborative-Development
+# Manifesto for Human-AI Collaborative Development
 English | [中文](README.zh.md)
 
-More than twenty years have passed since the publication of the Agile Software Development Manifesto and its twelve principles. With the rise of Code Agents, both humans and Code Agents now serve as core participants in software development. The development paradigm once centered on "human-human collaboration" has quietly shifted toward "human-machine collaboration."
+When the *Agile Software Development Manifesto* was born in 2001, the collaborative relationships in software development were **human-to-human** — developer to developer, developer to designer, developer to tester, developer to product manager, team to customer. Its core assumption was: **humans are the sole productive entities**, so it focused on resolving collaboration friction between "human and human" and "human and process," addressing delivery pain points in complex business environments by shortening feedback cycles and emphasizing team collaboration.
 
-We need new principles — principles that clarify the relationship between business and code, the division of responsibilities between humans and Code Agents, how both parties participate in project evolution, and how to collaborate efficiently and grow together. Thus we propose the **Human-AI Collaborative Development Manifesto** and the **Ten Principles of Human-AI Collaboration**, in the hope of practicing this new development paradigm together.
+More than twenty years later, as large model capabilities continue to advance, intelligent agents such as ClaudeCode, Trae, and Cursor have evolved from mere "assistants" into collaborative participants capable of **understanding intent, autonomous coding, and verified delivery**, deeply integrated into the software development lifecycle. This means:
+- **Production relationships have changed**: from a binary "human-human" relationship to a hybrid of "human-machine" and "human-human" relationships
+- **Collaboration interfaces have changed**: from natural language communication (human to human) to structured contracts plus natural language hybrid communication (human to intelligent agent)
+- **Trust mechanisms have changed**: from "trusting human judgment/commitments" to "requiring intelligent agents to provide verifiable evidence"
 
-## Manifesto for Human-AI Collaborative Development
+Therefore, we need a new manifesto and principles centered on **human-machine collaboration** to redefine the division of responsibilities between humans and intelligent agents, how both parties participate in project evolution, and how to collaborate efficiently and grow together... Thus we propose the **Manifesto for Human-AI Collaborative Development** and the **Ten Principles of Human-AI Collaboration**, in the hope of practicing this new development paradigm together with everyone.
 
+It should be noted that **this manifesto does not negate Agile, but rather builds upon it to establish first principles for the new paradigm of human-machine collaboration**.
+
+
+## 《Manifesto for Human-AI Collaborative Development》
 We are continually exploring better ways of developing software, practicing them ourselves, and helping others do the same.
-
-As humans and intelligent agents together become core participants in software development, we have come to value:
+As humans and intelligent agents together become core participants in software development, we have established the following values:
 
 **Business Value over Code Implementation**
 
-**Behavioral Contracts over Ad Hoc Instructions**
+**Behavioral Contracts over Flexible Instructions**
 
-**Delivery Evidence over Status Reports**
+**Delivery Evidence over Promises and Reports**
 
-**Continuous Evolution over Scheduled Updates**
+**Adaptive Evolution over Periodic Updates**
 
 That is, while there is value in the items on the right, we value the items on the left more.
 
-![](assets/human-ai-collaborative-development-manifesto.png)
-
-## Ten Principles of Human-AI Collaboration
-
+## 《Ten Principles of Human-AI Collaboration》
 We follow these principles:
 
 1. [Business First] Our highest priority is to ensure the business value of software delivery. Coding efficiency serves business value judgment.
@@ -47,11 +50,9 @@ We follow these principles:
 
 10. [Symbiotic Enhancement] Humans continuously improve their technical skills through collaboration; intelligent agents continuously deepen their business understanding through collaboration.
 
-![](assets/human-ai-collaborative-development-principles.png)
-
 ## Practical Examples
 
-The `skills` folder in this project contains several skills(in conjunction with the rules in the `rules` folder) that demonstrate how to translate the values and ten principles of the *Human-AI Collaborative Development Manifesto* into executable workflows.
+The `skills` folder in this project contains several skills (in conjunction with the rules in the `rules` folder) that demonstrate how to translate the values and ten principles of the *Human-AI Collaborative Development Manifesto* into executable workflows.
 
 > Note: You can add details on top of them to better fit your project.
 
@@ -77,8 +78,7 @@ project-analyze (Cognitive Foundation)
 
 ## Value Mapping
 
-### 1. Business Value over Coding Implementation
-
+### 1. Business Value over Code Implementation
 In traditional agile, "working software" is the primary measure. But in human-AI collaboration, agents produce code far faster than humans can review. "It runs" does not equal "it has business value." The three skills ensure business value is not drowned out by coding efficiency in the following ways:
 
 - **project-analyze** executes "business semantics mapping" in Phase 2 — for each module, it must answer "what it does," inferring business functions from naming, type definitions, and API routes, rather than merely listing technical components. If business semantics cannot be inferred from code, it marks them as "to be confirmed" instead of guessing. This ensures the agent's understanding of the project is always anchored at the business level.
@@ -86,7 +86,6 @@ In traditional agile, "working software" is the primary measure. But in human-AI
 - **doc-update** emphasizes only focusing on "user-visible functionality" when updating `README.md`. Internal code refactoring that does not affect how users interact with the software should not trigger updates, avoiding information noise.
 
 ### 2. Behavioral Contracts over Flexible Instructions
-
 In traditional agile, "individuals and interactions" emphasizes human-to-human communication. But in human-AI collaboration, communication between humans and agents has a natural asymmetry — human natural-language intent must be precisely translated into structured descriptions executable by the agent. Free-form instructions easily lead to misunderstandings, whereas behavioral contracts (BDD's Given/When/Then format) provide a shared language that both parties can understand unambiguously.
 
 - The core of **bdd-atdd** is the concrete implementation of "behavioral contracts":
@@ -96,7 +95,6 @@ In traditional agile, "individuals and interactions" emphasizes human-to-human c
 - A key guideline in the BDD template states: "Write scenarios from the user's perspective — describe behavior, not implementation details." This ensures the contract describes "what to do" rather than "how to do it," leaving implementation freedom to the agent and intent control to the human.
 
 ### 3. Delivery Evidence over Promises and Reports
-
 In traditional agile, "customer collaboration" emphasizes ongoing cooperation with customers rather than contract negotiation. In human-AI collaboration, the agent is an efficient but verifiable executor. Humans cannot and should not review every line of the agent's output, but nor should they blindly trust it. Therefore, "evidence" becomes the bridge for building trust — the agent does not need to promise "I'm done," but rather provides auditable evidence proving "I'm done."
 
 - **Phase 4 (Self-Verification)** and **Phase 5 (ATDD Finalization)** of **bdd-atdd** form a complete evidence chain:
@@ -107,7 +105,6 @@ In traditional agile, "customer collaboration" emphasizes ongoing cooperation wi
 - The evolution timeline maintained by **doc-update** in `PROJECT_STATE/index.md` is itself project-level delivery evidence — recording the time, type, and content of every change.
 
 ### 4. Adaptive Evolution over Periodic Updates
-
 In traditional agile, "responding to change" refers to a team's flexibility in handling requirement changes. In human-AI collaboration, "evolution" has a deeper meaning — agents may lose context between sessions, and project state can become fragmented across different sessions. Therefore, a mechanism is needed so that project understanding can evolve in sync with code, rather than relying on periodic manual review.
 
 - The design of **doc-update** directly embodies this value:

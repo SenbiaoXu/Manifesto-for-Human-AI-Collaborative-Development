@@ -1,16 +1,16 @@
-# Manifesto for Human-AI Collaborative Development
+## Manifesto for Human-AI Collaborative Development
 
 We are continually exploring better ways of developing software, practicing them ourselves, and helping others do the same.
 
-As humans and intelligent agents together become core participants in software development, we have come to value:
+As humans and intelligent agents together become core participants in software development, we have established the following values:
 
 **Business Value over Code Implementation**
 
-**Behavioral Contracts over Ad Hoc Instructions**
+**Behavioral Contracts over Flexible Instructions**
 
-**Delivery Evidence over Status Reports**
+**Delivery Evidence over Promises and Reports**
 
-**Continuous Evolution over Scheduled Updates**
+**Adaptive Evolution over Periodic Updates**
 
 That is, while there is value in the items on the right, we value the items on the left more.
 

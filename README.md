@@ -1,6 +1,8 @@
 # Manifesto for Human-AI Collaborative Development
 English | [中文](README.zh.md)
 
+![](./assets/human-ai-collaborative-development-manifesto.png)
+
 When the *Agile Software Development Manifesto* was born in 2001, the collaborative relationships in software development were **human-to-human** — developer to developer, developer to designer, developer to tester, developer to product manager, team to customer. Its core assumption was: **humans are the sole productive entities**, so it focused on resolving collaboration friction between "human and human" and "human and process," addressing delivery pain points in complex business environments by shortening feedback cycles and emphasizing team collaboration.
 
 More than twenty years later, as large model capabilities continue to advance, intelligent agents such as ClaudeCode, Trae, and Cursor have evolved from mere "assistants" into collaborative participants capable of **understanding intent, autonomous coding, and verified delivery**, deeply integrated into the software development lifecycle. This means:

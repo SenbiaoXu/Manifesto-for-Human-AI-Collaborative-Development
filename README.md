@@ -92,7 +92,7 @@ In traditional agile, "individuals and interactions" emphasizes human-to-human c
   - **Phase 1 (BDD Specification)**: Translates the user's natural-language requirements into behavioral scenarios in Given/When/Then format, covering happy paths, edge cases, and error conditions. This process itself is one of "clarifying intent" — writing Given/When/Then forces both parties (human and agent) to make vague requirements concrete.
   - **Phase 2 (ATDD Draft)**: Based on BDD scenarios, further defines acceptance criteria, specifying "what command to verify with, what result is expected." The ATDD draft is submitted for user review, ensuring human and agent agree on "what counts as done."
   - **Phase 3 (Implementation)**: The agent codes strictly according to the confirmed behavioral contracts. If new scenarios are discovered during implementation, **direct coding is not allowed** — the agent must return to Phase 1 to add the new scenarios to the BDD document first. Contracts precede implementation.
-- A key guideline in the BDD template states: "Write scenarios from the user's perspective — describe behavior, not implementation details." This ensures the contract describes "what to do" rather than "how to do it," leaving implementation freedom to the agent and intent control to the human.
+- A key guideline in the BDD template states: "Use business/domain language, avoid technical implementation language." BDD documents are meant for human review and must use language understandable by non-technical stakeholders. Technical implementation details belong in ATDD. This ensures the contract describes "what to do" rather than "how to do it," leaving implementation freedom to the agent and intent control to the human.
 
 ### 3. Delivery Evidence over Promises and Reports
 In traditional agile, "customer collaboration" emphasizes ongoing cooperation with customers rather than contract negotiation. In human-AI collaboration, the agent is an efficient but verifiable executor. Humans cannot and should not review every line of the agent's output, but nor should they blindly trust it. Therefore, "evidence" becomes the bridge for building trust — the agent does not need to promise "I'm done," but rather provides auditable evidence proving "I'm done."
@@ -187,7 +187,7 @@ In traditional agile, "responding to change" refers to a team's flexibility in h
 
 **Implementation**:
 - **Human → Agent** (precise and effective):
-  - BDD's Given/When/Then format forces humans to make vague requirements concrete into verifiable scenarios. The template guide requires "be specific and clear in Then clauses — avoid vague assertions like 'it works correctly.'"
+  - BDD's Given/When/Then format forces humans to make vague requirements concrete into verifiable scenarios. The template guide requires "describe observable behavioral outcomes in Then clauses — avoid vague assertions like 'it works correctly'."
   - ATDD drafts require specifying "what command to use, what result is expected," further concretizing acceptance criteria.
 - **Agent → Human** (concise and readable):
   - BDD documents use a unified scenario format that is clear at a glance.

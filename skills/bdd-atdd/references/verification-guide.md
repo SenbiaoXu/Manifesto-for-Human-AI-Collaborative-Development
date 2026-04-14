@@ -4,18 +4,27 @@
 
 This guide helps you decide how to verify each BDD scenario during Phase 4 (Self-Verification). The verification strategy depends on the project type, available test frameworks, and the nature of the scenario.
 
-## Evidence Quality Hierarchy
+## Evidence Credibility Assessment
 
-Evidence falls into a clear quality spectrum. **Always prefer higher-quality evidence.**
+Evidence quality is not determined by how automated the acquisition method is, but by **whether a human can quickly and independently judge the credibility of the result**.
+High-quality evidence must satisfy two dimensions:
+1. **Machine-executable verification**: Proves code actually behaves as expected (tests pass, commands succeed, etc.)
+2. **Human-directly-verifiable**: Allows a person to intuitively confirm the result is correct without reading code (screenshots, before/after comparisons, actual output, etc.)
 
-| Level | Evidence Type | Quality | Examples |
+### Evidence Quality Hierarchy
+
+| Level | Evidence Type | Human Verifiability | Description |
 |---|---|---|---|
-| **A** | Executable output | Strong | Test runner output, command exit codes, program stdout/stderr, tool invocation results |
+| **S** | Multi-perspective corroboration | Highest | Automated test passing **+** human-intuitively-perceivable comparative evidence. E.g., E2E test passes **+** before/after screenshot comparison; unit test passes **+** input/output mapping |
+| **A** | Executable output | High | Test runner output, command exit codes, tool invocation results. But humans cannot intuitively judge whether the test itself is valid |
 | **B** | Observable behavior | Good | HTTP responses, file system changes, process status, API call results |
 | **C** | Artifact inspection | Acceptable | Build output, generated files, configuration snapshots |
 | **D** | Code review only | Weak — last resort | Reading source code and reasoning about logic |
 
-**Core principle**: Evidence must demonstrate that the code **actually behaves** as expected, not merely that the code **appears to be correct**. A passing test is always stronger than "I traced lines 42–58 and the logic looks right."
+**Core principles**:
+- **Evidence serves human credibility judgment**: When choosing evidence types, always ask yourself — "Can the user, seeing this evidence, judge whether the result is correct without reading code?" If not, supplement with human-perceivable evidence
+- **Level A is not good enough**: A passing test only proves "a test passed," not "the right thing was tested." When changes have visible impact on humans (UI, API behavior, output format, etc.), you **must** aim for Level S — provide human-directly-verifiable comparative evidence
+- **Evidence must prove actual code behavior matches expectations**: Not merely that the code looks correct. "I traced lines 42-58 and the logic looks right" is never acceptable evidence
 
 ### When Code Review Evidence is Acceptable
 
@@ -50,6 +59,30 @@ For each BDD scenario, evaluate in the following order:
 5. **Code review only** (Level D — last resort).
    - Record what you checked and why stronger evidence was unavailable.
    - If even code review is infeasible → Mark the scenario as "Cannot verify" and explain why.
+
+6. **[Required after all steps] Does the change have a visible/perceivable impact on humans?**
+   - Yes → **Must** additionally collect human-intuitively-verifiable evidence (screenshots, before/after comparisons, actual output examples, etc.) to elevate evidence to Level S. See "Human-Verifiable Evidence by Change Type" below
+   - No → Current evidence is sufficient
+
+### Human-Verifiable Evidence by Change Type
+
+When changes have a perceivable impact on humans, you **must** additionally provide human-intuitively-verifiable evidence. Different types of changes require different human-verifiable evidence:
+
+| Change Type | Required Human-Verifiable Evidence | Rationale |
+|---|---|---|
+| UI/Page changes | Before/after screenshot comparison | Humans can instantly judge whether UI changed as expected, verifying the test actually tests the right thing |
+| API behavior changes | Actual request/response examples | Show the specific request and complete response body, not just "test passed" |
+| Data/Logic changes | Input/output mapping examples | Before: input X → output Y; After: input X → output Z |
+| Style/Appearance changes | Visual comparison screenshots | Before/after rendered result screenshots |
+| Config/Structure changes | Before/after file diff | git diff output or file content comparison |
+| Build/Deploy changes | Build artifacts or runtime status screenshots | Service started successfully, page accessible, etc. |
+
+**Why human-verifiable evidence is needed**: Agent-written test cases may have the following issues —
+- Test assertions are too weak, not actually verifying key behavior (e.g., `assert true`)
+- Tests verify the wrong thing (e.g., checking a button exists but not its text)
+- Tests don't match the requirement (requirement says change color, test only checks element exists)
+
+Human-verifiable evidence lets users **judge whether the test is effective without reading code** — this is the ultimate safeguard for evidence credibility.
 
 ## Detecting Test Frameworks
 

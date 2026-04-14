@@ -3,21 +3,24 @@ name: project-analyze
 description: Deep project analysis to extract architecture design, tech stack, core modules, and business semantics, then generate documentation.
 ---
 
-# Role
-You are a top-tier architect and code analysis expert, proficient in various engineering paradigms, with exceptional source code reading, dependency topology analysis, and business logic reverse-engineering capabilities.
-
 # Goal
 Deeply analyze the project in the current working directory, accurately extracting its architecture design, tech stack, core modules, and business semantics. Upon completion of the analysis, generate a `PROJECT_STATE` folder and a structured set of Markdown documents in the project root directory, following strict specifications.
+
+# Principles
+- **Observe before inferring**: At each step, first state the facts that can be directly observed from the code, then provide inferences. If the reason cannot be inferred, state only the facts — do not fabricate "why"
+- **Stop and ask when uncertain**: If business semantics cannot be inferred from the code, mark as "To be confirmed" rather than guessing. If multiple interpretations are equally reasonable, present them to the user for selection
+- **Treat simple projects simply**: If the project has no more than 20 source files, merge Phase 1/2 into a single step — no need to over-subdivide
 
 # Analysis Scope Control
 - **Must exclude**: node_modules, dist, build, out, .git, vendor, __pycache__, target, .next, coverage, and other generated artifact directories
 - **Must exclude**: Lock files (package-lock.json, yarn.lock, pnpm-lock.yaml, etc.)
 - **Focus on core**: Only analyze source code, dependency declarations, configuration files, and test code — do not analyze the internal implementation of third-party dependencies
-- **Small projects**: If the project has no more than 20 source files total, Phase 1/2 can be merged into a single quick scan without over-subdividing
 
 # Execution Flow
 
 ## Phase 1: Top-Level Reconnaissance and Project Characterization
+
+**Completion Criteria**: Can answer "What technology does this project use, what architectural paradigm, and where is the core entry point".
 
 ### 1.1 Configuration File Scan (Check in priority order)
 Look for the following key configuration files (analyze if found, skip if not):
@@ -46,6 +49,8 @@ From the dependency manifest, identify:
 
 ## Phase 2: Deep Topology and Business Deconstruction
 
+**Completion Criteria**: Can answer "What does each core module do, what does it depend on, and what depends on it".
+
 ### 2.1 Entry Point Tracing
 Find the project entry file (e.g., main.*, app.*, index.*, Application.*), and from the entry point, trace the core import/require chain to identify key nodes in the core dependency graph.
 
@@ -57,7 +62,7 @@ Combining directory structure, import relationships, and data flow, determine th
 - **Layered Architecture**: e.g., controller → service → dao/repository
 - **Microservices / Serverless**: Multiple independent services, each with its own entry point and database
 
-For identified patterns, describe the architecture layer rules and data flow in a single sentence.
+For identified patterns, describe the architecture layer rules and data flow in a single sentence. If multiple patterns coexist, describe their respective scopes.
 
 ### 2.3 Business Semantics Mapping
 For each core directory/module, you must answer:
@@ -66,22 +71,22 @@ For each core directory/module, you must answer:
 - **What it depends on**: Other modules or external services this module depends on
 - **What depends on it**: Which modules depend on this module
 
-**Note**: If business semantics cannot be inferred from the code, mark it as "To be confirmed" rather than guessing.
+**When to stop and ask**: If the business semantics of a core module cannot be inferred from the code, do not guess — mark it as "To be confirmed" and ask the user. If inter-module dependency relationships are ambiguous, list the observed phenomena and ask the user to confirm.
 
 ## Phase 3: Based on Analysis Results and User Confirmation, Generate `PROJECT_STATE`
+
+**Completion Criteria**: `PROJECT_STATE/` directory has been created, all documents have been generated and confirmed by the user.
 
 Strictly follow these steps to generate `PROJECT_STATE`. Do not skip user confirmation and generate content directly.
 
 ### 3.1 Understand `PROJECT_STATE` Directory Structure Requirements
 
-```
-PROJECT_STATE/
+📁PROJECT_STATE/
  ├── index.md (Overall overview, entry file)
  ├── architecture.md (Architecture and tech stack design)
- └── modules/ (Module details, organized by business/functional category)
+ └── 📁modules/ (Module details, organized by business/functional category)
       ├── module_A.md
       └── module_B.md
-```
 
 ### 3.2 Content Specifications for Each File
 
@@ -104,7 +109,7 @@ Include the following content as appropriate for the specific project:
 - **Detailed Tech Stack Inventory**: Categorized listing (frameworks, routing, state management, styling, tools, etc.).
 - **Directory Tree Structure and Responsibilities**: Use tree text format to display core directories, with a one-sentence annotation of each directory's responsibility boundaries.
 - **Architecture Pattern**: Describe the architectural pattern adopted by the project, including layering rules and data flow.
-- **Key Design Decisions**: Only record decisions that can be clearly inferred from the code (e.g., "Using EventBus to decouple inter-module communication"). **Do not fabricate decision rationales that cannot be verified from the code**; if the rationale cannot be inferred, state only the fact (e.g., "Using Zustand for state management") without making up the "why".
+- **Key Design Decisions**: Only record decisions that can be clearly inferred from the code (e.g., "Using EventBus to decouple inter-module communication"). **Do not fabricate decision rationales that cannot be verified from the code**; if the rationale cannot be inferred, state only the fact (e.g., "Using Zustand for state management") without making up the "why". If the reason for a decision is uncertain, mark it as "To be confirmed".
 
 #### PROJECT_STATE/modules/*.md
 Module documents should be **consolidated to around 5, not exceeding 10**.

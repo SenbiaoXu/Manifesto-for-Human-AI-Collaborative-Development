@@ -14,7 +14,7 @@ ATDD文档与BDD场景直接对应和追溯。
 # [功能名称]
 
 ## BDD参考
-[BDD文档路径，如 PROJECT_STATE/BDD/user-login-email-validation.md]
+[BDD文档路径，如 PROJECT_STATE/BDD/user-email-login.md]
 
 ## 验证策略
 - 日期：[验证日期]
@@ -32,7 +32,7 @@ ATDD文档与BDD场景直接对应和追溯。
 **测试所用的工具**（如果有的话）：[工具名称]
 
 **结果**：通过 / 失败（初稿阶段留空）
-**证据**：[确认结果的内容——测试输出、日志片段、截图引用等]（初稿阶段留空）
+**证据**：[确认结果的内容。当变更对人可见时（UI/API/数据输出等），**必须**包含人类可直观检验的对比证据（如改动前后截图、实际请求/响应示例、输入/输出对照），而非仅提供测试通过信息]（初稿阶段留空）
 
 ---
 
@@ -55,11 +55,16 @@ ATDD文档与BDD场景直接对应和追溯。
 ## 非文字证据
 
 自验证过程中产生的非文字证据（截图、数据文件等）应保存到
-`PROJECT_STATE/ATDD/<特性名称>/`目录下，使用有意义的文件名（如 `evidence-tc1.png`、`evidence-tc2.log`）。
+`PROJECT_STATE/ATDD/<特性名称>/`目录下，使用有意义的文件名。
+当变更对人可见时，应主动采集变更前后的对比证据，命名建议：
+- 变更前：`before-tc1.png`、`before-tc2.json`
+- 变更后：`after-tc1.png`、`after-tc2.json`
+- 通用证据：`evidence-tc3.log`
 
 在acceptance.md的证据字段中使用相对路径引用：
 ```
-详见 [证据截图](./evidence-tc1.png)
+变更前：详见 [改动前截图](./before-tc1.png)
+变更后：详见 [改动后截图](./after-tc1.png)
 ```
 
 支持的证据文件类型：
@@ -79,18 +84,19 @@ ATDD文档与BDD场景直接对应和追溯。
 ### 定稿阶段（阶段五）
 1. 根据实际自验证结果填写每个测试用例的**结果**（通过/失败）。
 2. 填写每个测试用例的**证据**（测试输出、日志片段/数据、截图等）。
-3. 如有非文字证据文件，在证据字段中使用相对路径引用（如 `详见 [截图](./evidence-tc1.png)`）。
-4. 填写汇总表。
-5. 如实记录结果。如果某个场景无法通过自动化测试验证的，如实说明并描述检查了哪些内容。
-6. 在备注中说明任何限制条件。
+3. **检查人类可验证性**：对每个测试用例，审视其证据是否允许人不读代码就判断结果是否正确。当变更对人可见时（UI/API/数据输出等），**必须**包含对比证据（改动前后截图、实际请求/响应示例、输入/输出对照等），达到证据等级S。
+4. 如有非文字证据文件，在证据字段中使用相对路径引用（如 `详见 [截图](./evidence-tc1.png)`）。变更前后的对比证据建议命名为 `before-<tc>.png` 和 `after-<tc>.png`。
+5. 填写汇总表。
+6. 如实记录结果。如果某个场景无法通过自动化测试验证的，如实说明并描述检查了哪些内容。
+7. 在备注中说明任何限制条件。
 
 ## 完整示例（定稿后）
 
 ```markdown
-# 带邮箱验证的用户登录
+# 用户邮箱登录
 
 ## BDD参考
-PROJECT_STATE/BDD/user-login-email-validation.md
+PROJECT_STATE/BDD/user-email-login.md
 
 ## 验证策略
 - 日期：2026-04-09
@@ -99,7 +105,7 @@ PROJECT_STATE/BDD/user-login-email-validation.md
 
 ## 测试用例
 
-### 测试用例 1：有效凭据返回JWT令牌
+### 测试用例 1：有效凭据登录成功
 **Given（前置条件）**：测试数据库中已插入用户 alice@example.com（密码哈希对应 "SecurePass123!"）
 **When（操作）**：POST /api/login，请求体为 {"email": "alice@example.com", "password": "SecurePass123!"}
 **Then（预期结果）**：响应状态码 200，响应体包含 "token" 字段，令牌为有效JWT且有效期为24小时
@@ -111,19 +117,7 @@ PROJECT_STATE/BDD/user-login-email-validation.md
 
 ---
 
-### 测试用例 2：无效密码返回401
-**Given（前置条件）**：测试数据库中已插入用户 alice@example.com
-**When（操作）**：POST /api/login，请求体为 {"email": "alice@example.com", "password": "WrongPassword"}
-**Then（预期结果）**：响应状态码 401，响应体包含 "Invalid credentials"，无 token 字段
-
-**测试所用命令**：`pytest tests/test_login.py::test_invalid_password -v`
-
-**结果**：通过
-**证据**：测试输出确认状态码为 401 且错误信息匹配。
-
----
-
-### 测试用例 3：格式错误的邮箱返回400
+### 测试用例 2：格式错误的邮箱被拒绝
 **Given（前置条件）**：无需特定设置
 **When（操作）**：POST /api/login，请求体为 {"email": "not-an-email", "password": "AnyPassword"}
 **Then（预期结果）**：响应状态码 400，响应体包含 "Invalid email format"
@@ -131,24 +125,11 @@ PROJECT_STATE/BDD/user-login-email-validation.md
 **测试所用命令**：`pytest tests/test_login.py::test_malformed_email -v`
 
 **结果**：通过
-**证据**：验证层在数据库查询之前即拒绝了请求。
+**证据**：验证层在数据库查询之前即拒绝了请求。详见 [测试输出截图](./evidence-tc2.png)
 
 ---
 
-### 测试用例 4：SQL注入被净化处理
-**Given（前置条件）**：测试数据库按常规方式插入数据
-**When（操作）**：POST /api/login，请求体为 {"email": "admin@example.com' OR '1'='1", "password": "anything"}
-**Then（预期结果）**：响应状态码 400，未使用原始输入执行数据库查询
-
-**测试所用命令**：`pytest tests/test_login.py::test_sql_injection_sanitized -v`
-**测试所用的工具**：数据库查询日志分析
-
-**结果**：通过
-**证据**：使用了参数化查询。输入在到达数据库层之前已被邮箱格式验证拒绝。详见 [查询日志](./evidence-tc4.log)
-
----
-
-### 测试用例 5：数据库不可达返回503
+### 测试用例 3：数据库不可达时返回服务不可用错误
 **Given（前置条件）**：通过 `docker stop auth-db` 停止数据库容器
 **When（操作）**：使用有效凭据发送 POST /api/login 请求
 **Then（预期结果）**：响应状态码 503，错误信息为 "Service temporarily unavailable"
@@ -156,7 +137,7 @@ PROJECT_STATE/BDD/user-login-email-validation.md
 **测试所用的工具**：curl 命令行工具
 
 **结果**：通过
-**证据**：停止数据库后，通过curl发送请求。收到503响应及正确的错误信息体。测试后重启数据库。详见 [响应截图](./evidence-tc5.png)
+**证据**：停止数据库后，通过curl发送请求。收到503响应及正确的错误信息体。测试后重启数据库。详见 [响应截图](./evidence-tc3.png)
 
 ---
 
@@ -165,13 +146,11 @@ PROJECT_STATE/BDD/user-login-email-validation.md
 | BDD场景 | 测试用例 | 结果 |
 |---|---|---|
 | 使用有效凭据成功登录 | TC-1 | 通过 |
-| 使用无效密码登录 | TC-2 | 通过 |
-| 使用格式错误的邮箱登录 | TC-3 | 通过 |
-| SQL注入攻击尝试登录 | TC-4 | 通过 |
-| 数据库不可达时登录 | TC-5 | 通过 |
+| 使用格式错误的邮箱登录 | TC-2 | 通过 |
+| 系统服务不可用时登录 | TC-3 | 通过 |
 
-**场景总数**：5
-**通过数**：5
+**场景总数**：3
+**通过数**：3
 **失败数**：0
 ```
 
@@ -180,10 +159,10 @@ PROJECT_STATE/BDD/user-login-email-validation.md
 初稿阶段，结果和证据字段留空：
 
 ```markdown
-# 带邮箱验证的用户登录
+# 用户邮箱登录
 
 ## BDD参考
-PROJECT_STATE/BDD/user-login-email-validation.md
+PROJECT_STATE/BDD/user-email-login.md
 
 ## 验证策略
 - 日期：2026-04-09
@@ -192,7 +171,7 @@ PROJECT_STATE/BDD/user-login-email-validation.md
 
 ## 测试用例
 
-### 测试用例 1：有效凭据返回JWT令牌
+### 测试用例 1：有效凭据登录成功
 **Given（前置条件）**：测试数据库中插入用户 alice@example.com（密码哈希对应 "SecurePass123!"）
 **When（操作）**：POST /api/login，请求体为 {"email": "alice@example.com", "password": "SecurePass123!"}
 **Then（预期结果）**：响应状态码 200，响应体包含 "token" 字段，令牌为有效JWT且有效期为24小时
@@ -204,19 +183,7 @@ PROJECT_STATE/BDD/user-login-email-validation.md
 
 ---
 
-### 测试用例 2：无效密码返回401
-**Given（前置条件）**：测试数据库中插入用户 alice@example.com
-**When（操作）**：POST /api/login，请求体为 {"email": "alice@example.com", "password": "WrongPassword"}
-**Then（预期结果）**：响应状态码 401，响应体包含 "Invalid credentials"，无 token 字段
-
-**测试所用命令**（计划）：`pytest tests/test_login.py::test_invalid_password -v`
-
-**结果**：（待验证）
-**证据**：（待验证）
-
----
-
-### 测试用例 3：格式错误的邮箱返回400
+### 测试用例 2：格式错误的邮箱被拒绝
 **Given（前置条件）**：无需特定设置
 **When（操作）**：POST /api/login，请求体为 {"email": "not-an-email", "password": "AnyPassword"}
 **Then（预期结果）**：响应状态码 400，响应体包含 "Invalid email format"
@@ -228,19 +195,7 @@ PROJECT_STATE/BDD/user-login-email-validation.md
 
 ---
 
-### 测试用例 4：SQL注入被净化处理
-**Given（前置条件）**：测试数据库按常规方式插入数据
-**When（操作）**：POST /api/login，请求体为 {"email": "admin@example.com' OR '1'='1", "password": "anything"}
-**Then（预期结果）**：响应状态码 400，未使用原始输入执行数据库查询
-
-**测试所用命令**（计划）：`pytest tests/test_login.py::test_sql_injection_sanitized -v`
-
-**结果**：（待验证）
-**证据**：（待验证）
-
----
-
-### 测试用例 5：数据库不可达返回503
+### 测试用例 3：数据库不可达时返回服务不可用错误
 **Given（前置条件）**：通过 `docker stop auth-db` 停止数据库容器
 **When（操作）**：使用有效凭据发送 POST /api/login 请求
 **Then（预期结果）**：响应状态码 503，错误信息为 "Service temporarily unavailable"
@@ -257,12 +212,10 @@ PROJECT_STATE/BDD/user-login-email-validation.md
 | BDD场景 | 测试用例 | 结果 |
 |---|---|---|
 | 使用有效凭据成功登录 | TC-1 | （待验证） |
-| 使用无效密码登录 | TC-2 | （待验证） |
-| 使用格式错误的邮箱登录 | TC-3 | （待验证） |
-| SQL注入攻击尝试登录 | TC-4 | （待验证） |
-| 数据库不可达时登录 | TC-5 | （待验证） |
+| 使用格式错误的邮箱登录 | TC-2 | （待验证） |
+| 系统服务不可用时登录 | TC-3 | （待验证） |
 
-**场景总数**：5
+**场景总数**：3
 **通过数**：（待验证）
 **失败数**：（待验证）
 ```

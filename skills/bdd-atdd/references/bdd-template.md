@@ -45,59 +45,49 @@ Then [expected error handling]
 
 ## Writing Guidelines
 
-1. Write scenarios from the user's perspective — describe behavior, not implementation details.
+1. **Use business/domain language, avoid technical implementation language**. BDD documents are meant for human review and must use language understandable by non-technical stakeholders (product managers, business analysts, etc.). Technical implementation details (CLI flags, API endpoint paths, data structure names, configuration keys, etc.) belong in ATDD, not BDD.
+   - ✓ Good: "Launch browser in headless mode (in background)" — describes behavior, instantly understandable
+   - ✗ Bad: "Launch browser with `--headless` flag" — `--headless` is a technical implementation detail, belongs in ATDD
+   - ✓ Good: "After the user submits a login request, the system validates credentials and returns an authentication token" — describes behavior
+   - ✗ Bad: "POST /api/login returns JWT token" — API path and data structure are technical details, belongs in ATDD
 2. Cover all scenarios: happy path, boundary cases, and error conditions.
 3. Each scenario should test only one behavior. If a scenario tests multiple things, split it into separate independent scenarios.
 4. Use "And" to chain multiple preconditions or results within a single scenario.
-5. Be specific in "Then" clauses — avoid vague assertions like "it works correctly"; instead say "the response status code is 200 and the response body contains a 'token' field".
+5. In "Then" clauses, describe **observable behavioral outcomes** — avoid vague assertions like "it works correctly"; instead describe specific perceivable behavior changes (e.g., "the system returns a success response", "the user is redirected to the homepage", "the page displays an error message"). Exact assertion values and verification methods are defined in ATDD.
 6. Only use a "Background" section when multiple scenarios share the same precondition setup.
+7. **BDD vs ATDD language boundary**:
+   - BDD answers "**what behavior is expected**" — uses business language to describe inputs, actions, and expected outcomes
+   - ATDD answers "**how to verify that behavior**" — uses technical language to define specific test steps, commands, assertions, and verification methods
+   - If a description requires technical background to understand, it likely belongs in ATDD, not BDD
 
 ## Complete Example
 
 ```markdown
-# Feature: User Login with Email Validation
+# Feature: User Email Login
 
 ## Description
-Allow users to log in using their email address and password. The system validates the email format, checks credentials, and returns an authentication token upon success.
+Allow users to log in using their email address and password. The system validates the email format and login credentials, returning an authentication token upon successful login.
 
 ## Background
 Given the user registration system is running
-And the database contains registered users
 
 ## Scenario: Successful login with valid credentials
-Given a user with email "alice@example.com" exists in the system
+Given a user with email "alice@example.com" is registered in the system
 And the user's password is "SecurePass123!"
-When the user submits a login request with email "alice@example.com" and password "SecurePass123!"
-Then the response status code is 200
-And the response body contains a valid JWT token
-And the token has a 24-hour expiration
-
-## Scenario: Login with invalid password
-Given a user with email "alice@example.com" exists in the system
-When the user submits a login request with email "alice@example.com" and password "WrongPassword"
-Then the response status code is 401
-And the response body contains the error message "Invalid credentials"
-And no JWT token is returned
+When the user submits a login request with this email and password
+Then the login succeeds and the system returns an authentication token
+And the token is valid for 24 hours
 
 ## Boundary Cases
 
-### Scenario: Login with malformed email
-When the user submits a login request with email "not-an-email" and password "AnyPassword"
-Then the response status code is 400
-And the response body contains the error message "Invalid email format"
-
-### Scenario: SQL injection attack attempt
-When the user submits a login request with email "admin@example.com' OR '1'='1" and password "anything"
-Then the response status code is 400
-And the input has been sanitized — no SQL injection occurred
-And the response body contains the error message "Invalid email format"
+### Scenario: Login with invalid email format
+When the user submits a login request with an invalid email address "not-an-email"
+Then the system rejects the login and displays "Invalid email format"
 
 ## Error Conditions
 
-### Scenario: Login when database is unreachable
-Given the database connection is unavailable
+### Scenario: Login when service is unavailable
+Given the database that the login service depends on is unavailable
 When the user submits a login request with valid credentials
-Then the response status code is 503
-And the response body contains the error message "Service temporarily unavailable"
-And the error has been logged for administrator review
+Then the system displays "Service temporarily unavailable, please try again later"
 ```

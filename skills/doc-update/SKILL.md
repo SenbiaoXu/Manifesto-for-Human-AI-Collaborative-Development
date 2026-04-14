@@ -10,6 +10,11 @@ After completing all code changes, update project documentation based on the cha
 2. Describe features and usage guide (README.md)
 3. Document knowledge useful for future evolution (LEARNING/index.md)
 
+# Principles
+- **Only change what needs changing**: Only update documentation content that has become outdated due to this code change — do not take the opportunity to "incidentally" rewrite, reformat, or polish unaffected paragraphs
+- **Match existing style**: When updating documentation, follow the existing writing style, format, and level of detail — do not change the presentation based on personal preference
+- **Ask when uncertain**: If you cannot determine whether a document needs updating, present the reasons for and against updating to the user and ask for confirmation
+
 ## Step 1: Determine Change Scope
 
 Before using this skill, you must first clarify the changes made through:
@@ -107,6 +112,11 @@ Location: The `LEARNING` folder is in the project root directory, globally uniqu
 - Encountered and resolved anomalies/errors during execution (e.g., build failures, dependency conflicts, runtime errors)
 - User corrected the Agent's working approach or provided improvement suggestions
 - Discovered technical constraints or pitfalls worth documenting in the project
+
+**Anti-patterns — what NOT to record**:
+- Routine operation steps (e.g., "installed dependencies") — these are not learnings
+- Naming conventions specific only to this project — the code itself is the documentation
+- Unconfirmed personal speculations
 
 Content format:
 ```

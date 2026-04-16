@@ -38,8 +38,8 @@ description: 基于行为及验收标准驱动开发,当用户要求实现功能
 - 在项目根目录查找`PROJECT_STATE/`
 - 如果已存在，直接使用。如果不存在，创建`PROJECT_STATE/`并包含`BDD/`和`ATDD/`子目录
 
-5. **阅读 BDD 模板,提供多种BDD编写方案**，BDD模板位于本技能目录下的`references/bdd-template.md`。
-提出2-3种BDD的编写方案，让用户选择，等用户明确后再编写BDD。
+5. **阅读 BDD 模板,提供多种编写方案给用户选择**，BDD模板位于本技能目录下的`references/bdd-template.md`。
+**务必提出2-3种BDD的编写方案，让用户选择，等用户明确后再编写BDD**
 
 6. **创建`PROJECT_STATE/BDD/<特性名称>.md`**，包含：
 - 以需求名称为标题的特性（Feature）标题

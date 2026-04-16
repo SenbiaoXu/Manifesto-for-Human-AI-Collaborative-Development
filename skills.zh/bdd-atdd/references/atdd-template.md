@@ -24,10 +24,9 @@ ATDD文档与BDD场景直接对应和追溯。
 ## 测试用例
 
 ### 测试用例 1：[测试名称]
-**Given（前置条件）**：[具体的测试设置——精确的数据、状态、命令]
-**When（操作）**：[执行的具体操作——命令、API调用、调用工具]
-**Then（预期结果）**：[预期结果——精确的断言、预期的输出]
+**对应BDD场景**：[场景名称，如"使用有效凭据成功登录"]
 
+**验证思路**：[获取证据的思路和过程——如何验证该场景的行为，包含具体的操作路径、验证方法、观测点]
 **测试所用命令**（如果有的话）：[具体命令]
 **测试所用的工具**（如果有的话）：[工具名称]
 
@@ -73,35 +72,24 @@ ATDD文档与BDD场景直接对应和追溯。
 ## 编写指南
 
 ### 初稿阶段（阶段二）
-1. 汇总表中**必须**明确每个测试用例所对应的BDD场景。
-2. Given/When/Then 应详细描述**计划**的测试设置、操作和预期结果。
+1. 每个测试用例通过"**对应BDD场景**"字段追溯其来源场景，不重复 Given/When/Then。
+2. **验证思路**描述获取证据的思路和过程——具体的操作路径、验证方法、观测点。
 3. 包含**计划使用**的测试命令或工具（即使尚未编写测试代码，也应描述预期的命令格式）。
 4. 结果和证据字段留空，标注"（待验证）"。
 5. 汇总表中的结果列留空。
 
-### Given/When/Then 精准度要求
+### BDD 与 ATDD 的职责分工
 
-ATDD 的 Given/When/Then 相比 BDD **必须更加精准详细**，包含具体的操作过程，以提升证据的可信度。
+BDD 和 ATDD 回答的是不同的问题，不应重复相同内容：
 
-**When 应描述完整的操作路径**，而非跳到结果：
-- ✓ 精准写法："访问XXX页面，点击切换到XXX页签"
-- ✗ 模糊写法："访问组件A所在的页面"
+- **BDD 回答"期望什么行为"**——用 Given/When/Then 以业务语言描述系统的前置条件、操作和预期结果
+- **ATDD 回答"如何验证该行为"**——通过验证思路、测试命令/工具、结果和证据，描述具体的验证方法
 
-**Then 应描述在具体上下文中可观测的结果**，而非泛泛而谈：
-- ✓ 精准写法："XXX页签下包含一个组件A，组件显示YYY内容"
-- ✗ 模糊写法："显示组件A"
+ATDD 通过"对应BDD场景"字段追溯 BDD 场景，不再重复描述功能行为，而是专注于验证层面。
 
-**Given 应包含验证所需的具体状态和数据**，使人能复现验证过程。
-
-**综合示例**——在特定Tab页签下新增一个组件A：
-- ✓ 精准写法：
-  - Given：用户已登录系统，进入项目配置页面
-  - When：访问XXX页面，点击切换到XXX页签
-  - Then：页签下包含一个组件A，组件A显示YYY内容，且支持ZZZ操作
-- ✗ 模糊写法：
-  - Given：用户已登录
-  - When：访问组件A所在的页面
-  - Then：显示组件A
+**示例对比**——同一个场景在两份文档中的呈现：
+- BDD 中：`Given 系统中已注册用户 alice@example.com` / `When 用户提交登录请求` / `Then 登录成功，系统返回认证令牌`
+- ATDD 中：`对应BDD场景：使用有效凭据成功登录` / `验证思路：使用pytest发送POST请求，断言状态码200且含token字段`
 
 ### 定稿阶段（阶段五）
 1. 根据实际自验证结果填写每个测试用例的**结果**（通过/失败）。
@@ -128,10 +116,9 @@ PROJECT_STATE/BDD/user-email-login.md
 ## 测试用例
 
 ### 测试用例 1：有效凭据登录成功
-**Given（前置条件）**：测试数据库中已插入用户 alice@example.com（密码哈希对应 "SecurePass123!"）
-**When（操作）**：POST /api/login，请求体为 {"email": "alice@example.com", "password": "SecurePass123!"}
-**Then（预期结果）**：响应状态码 200，响应体包含 "token" 字段，令牌为有效JWT且有效期为24小时
+**对应BDD场景**：使用有效凭据成功登录
 
+**验证思路**：使用pytest发送POST /api/login请求（请求体包含邮箱和密码），断言响应状态码200且响应体包含token字段，解码JWT验证exp声明与24小时有效期一致
 **测试所用命令**：`pytest tests/test_login.py::test_valid_login -v`
 
 **结果**：通过
@@ -140,10 +127,9 @@ PROJECT_STATE/BDD/user-email-login.md
 ---
 
 ### 测试用例 2：格式错误的邮箱被拒绝
-**Given（前置条件）**：无需特定设置
-**When（操作）**：POST /api/login，请求体为 {"email": "not-an-email", "password": "AnyPassword"}
-**Then（预期结果）**：响应状态码 400，响应体包含 "Invalid email format"
+**对应BDD场景**：使用格式错误的邮箱登录
 
+**验证思路**：使用pytest发送POST /api/login请求（邮箱为非法格式），断言响应状态码400且响应体包含"Invalid email format"错误信息，确认验证层在数据库查询前即拒绝
 **测试所用命令**：`pytest tests/test_login.py::test_malformed_email -v`
 
 **结果**：通过
@@ -152,11 +138,10 @@ PROJECT_STATE/BDD/user-email-login.md
 ---
 
 ### 测试用例 3：数据库不可达时返回服务不可用错误
-**Given（前置条件）**：通过 `docker stop auth-db` 停止数据库容器
-**When（操作）**：使用有效凭据发送 POST /api/login 请求
-**Then（预期结果）**：响应状态码 503，错误信息为 "Service temporarily unavailable"
+**对应BDD场景**：系统服务不可用时登录
 
-**测试所用的工具**：curl 命令行工具
+**验证思路**：通过docker stop停止数据库容器模拟不可用状态，使用curl发送有效凭据的登录请求，检查响应状态码503和错误信息是否为"Service temporarily unavailable"，验证后重启数据库
+**测试所用的工具**：curl, docker
 
 **结果**：通过
 **证据**：停止数据库后，通过curl发送请求。收到503响应及正确的错误信息体。测试后重启数据库。详见 [响应截图](./evidence-tc3.png)
@@ -194,10 +179,9 @@ PROJECT_STATE/BDD/user-email-login.md
 ## 测试用例
 
 ### 测试用例 1：有效凭据登录成功
-**Given（前置条件）**：测试数据库中插入用户 alice@example.com（密码哈希对应 "SecurePass123!"）
-**When（操作）**：POST /api/login，请求体为 {"email": "alice@example.com", "password": "SecurePass123!"}
-**Then（预期结果）**：响应状态码 200，响应体包含 "token" 字段，令牌为有效JWT且有效期为24小时
+**对应BDD场景**：使用有效凭据成功登录
 
+**验证思路**：使用pytest发送POST /api/login请求（请求体包含邮箱和密码），断言响应状态码200且响应体包含token字段，解码JWT验证exp声明与24小时有效期一致
 **测试所用命令**（计划）：`pytest tests/test_login.py::test_valid_login -v`
 
 **结果**：（待验证）
@@ -206,10 +190,9 @@ PROJECT_STATE/BDD/user-email-login.md
 ---
 
 ### 测试用例 2：格式错误的邮箱被拒绝
-**Given（前置条件）**：无需特定设置
-**When（操作）**：POST /api/login，请求体为 {"email": "not-an-email", "password": "AnyPassword"}
-**Then（预期结果）**：响应状态码 400，响应体包含 "Invalid email format"
+**对应BDD场景**：使用格式错误的邮箱登录
 
+**验证思路**：使用pytest发送POST /api/login请求（邮箱为非法格式），断言响应状态码400且响应体包含"Invalid email format"错误信息
 **测试所用命令**（计划）：`pytest tests/test_login.py::test_malformed_email -v`
 
 **结果**：（待验证）
@@ -218,11 +201,10 @@ PROJECT_STATE/BDD/user-email-login.md
 ---
 
 ### 测试用例 3：数据库不可达时返回服务不可用错误
-**Given（前置条件）**：通过 `docker stop auth-db` 停止数据库容器
-**When（操作）**：使用有效凭据发送 POST /api/login 请求
-**Then（预期结果）**：响应状态码 503，错误信息为 "Service temporarily unavailable"
+**对应BDD场景**：系统服务不可用时登录
 
-**测试所用的工具**（计划）：curl 命令行工具
+**验证思路**：通过docker stop停止数据库容器模拟不可用状态，使用curl发送有效凭据的登录请求，检查响应状态码503和错误信息
+**测试所用的工具**（计划）：curl, docker
 
 **结果**：（待验证）
 **证据**：（待验证）

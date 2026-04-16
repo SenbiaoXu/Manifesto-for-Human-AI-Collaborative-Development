@@ -5,13 +5,14 @@ description: Behavior and acceptance criteria driven development. Triggers when 
 
 # BDD-ATDD Skill
 
-Enforces a structured code change workflow: define behaviors first (BDD), then write an acceptance test draft (ATDD draft) for user review, implement code, self-verify, and finally finalize the ATDD document based on actual verification results.
+Enforces a structured code change workflow: define behaviors first (BDD), then write an acceptance test draft (ATDD draft) for user review,
+implement code, self-verify, and finally finalize the ATDD document based on actual verification results.
 
 ## Principles
-- **Stop and ask when unclear**: If a user request has multiple interpretations, present them rather than silently choosing one. If boundary conditions are uncertain, ask for clarification
-- **Only write necessary scenarios**: Each BDD scenario must correspond to a clear requirement. Do not add scenarios the user didn't request "just in case"
+- **Requirements clarification**: If a user request has multiple interpretations, present them for the user to choose. If boundary conditions are uncertain, ask for clarification
+- **Only write necessary scenarios**: Each BDD scenario must correspond to a clear requirement. Do not add scenarios the user didn't request on your own
 - **Only change what must be changed**: During implementation, only modify code related to the current BDD scenarios — do not take the opportunity to refactor adjacent code or "improve" style
-- **Evidence serves human credibility judgment**: During verification, prioritize human-directly-verifiable evidence (screenshot comparisons, before/after mappings, actual output), not just executable evidence (test passed, command succeeded). When changes are human-visible, you must supplement with human-intuitively-verifiable comparative evidence
+- **Evidence serves human credibility judgment**: During verification, prioritize human-directly-verifiable evidence (key screenshots, actual output), not just executable evidence (test passed, command succeeded). When changes are human-visible, you must supplement with human-intuitively-verifiable evidence
 
 ## Five-Phase Workflow
 
@@ -25,27 +26,33 @@ This workflow is **strictly sequential**. Do not proceed to the next phase until
    Ask questions to understand: what are the inputs, outputs, boundary cases, and error conditions.
    **When to stop and ask**: If the requirement has more than one reasonable implementation approach, present the options to the user rather than deciding on your own.
 
-2. **Derive a feature name from the requirements**, using kebab-case.
+2. **Analyze existing code**. Before writing BDD scenarios, you must first understand the existing code logic in the area related to the requirements, ensuring Given/When/Then is based on code facts rather than guesses.
+   - **Locate relevant code**: Find code related to the functional area involved in the requirements
+   - **Understand actual interaction flow**: Default state, user operation paths, trigger conditions, data loading timing, state transition logic
+   - **Key principle**: Given must reflect the true initial state, When must reflect the true operation path. Do not assume initial state or that operations happen in one step — read the code first before writing scenarios
+
+3. **Derive a feature name from the requirements**, using kebab-case.
    - Extract core concepts (2-5 words)
    - All lowercase, spaces and special characters replaced with hyphens, no consecutive hyphens
    - Example: "Add email validation for login" → `email-validation-login`
 
-3. **Locate or create the PROJECT_STATE directory**:
+4. **Locate or create the PROJECT_STATE directory**:
    - Look for `PROJECT_STATE/` in the project root
    - If it already exists, use it directly. If not, create `PROJECT_STATE/` with `BDD/` and `ATDD/` subdirectories
 
-4. **Read the BDD template**, located at `references/bdd-template.md` in this skill's directory.
+5. **Read the BDD template and offer multiple writing options for the user to choose from**, the BDD template is located at `references/bdd-template.md` in this skill's directory.
+   **Be sure to propose 2-3 BDD writing options for the user to choose from, and wait for the user to confirm before writing the BDD**
 
-5. **Create `PROJECT_STATE/BDD/<feature-name>.md`**, containing:
+6. **Create `PROJECT_STATE/BDD/<feature-name>.md`**, containing:
    - A Feature title using the requirement name as the heading
    - A brief description
-   - All scenarios: happy path, boundary cases, error conditions
-   - Each scenario using Given/When/Then format
-   - **Must use business/domain language** — language understandable by non-technical stakeholders; technical implementation details (CLI flags, API paths, data structures, etc.) are left for ATDD
+   - All business scenarios: categorize all scenarios from a business perspective
+   - Each scenario using Given/When/Then format, **must describe the complete interaction process in detail** (operation paths, data input, UI/state changes) — because BDD is the only document describing functional behavior, ATDD will not repeat Given/When/Then
+   - **Must use business/domain language** — language understandable by non-technical stakeholders; technical implementation details (command parameters, API paths, data structures, etc.) are left for ATDD
 
    Note: If a file with a similar name already exists in the `PROJECT_STATE/BDD` directory, check whether the content is related first. If related but not an exact match, update the file to include the new scenarios rather than creating a new file.
 
-6. **Submit the BDD document for user review** before proceeding.
+7. **Submit the BDD document for user review** before proceeding.
    Wait for user confirmation or feedback. Adjust the document content as needed.
 
 ### Phase 2: ATDD Draft — Define Acceptance Criteria
@@ -61,7 +68,7 @@ This workflow is **strictly sequential**. Do not proceed to the next phase until
 4. **Write `PROJECT_STATE/ATDD/<feature-name>/acceptance.md` draft**, containing:
    - A reference to the corresponding BDD document path
    - Verification strategy (specific date, strategy method, verification approach)
-   - For each BDD scenario: **planned** test cases, with expected Given/When/Then, planned test commands
+   - For each BDD scenario: **planned** test cases, tracing source via "corresponding BDD scenario", including verification approach (method and process for obtaining evidence), planned test commands
    - Leave the **Result** field empty for each test case (to be filled after self-verification)
    - Leave the **Evidence** field empty for each test case (to be filled after self-verification)
    - Leave the summary table empty (to be filled after self-verification)
@@ -87,7 +94,7 @@ This workflow is **strictly sequential**. Do not proceed to the next phase until
    Read `references/verification-guide.md` in this skill's directory for detailed strategies.
 
 2. **Verification priority** (see the Evidence Credibility Assessment in `references/verification-guide.md`):
-   - **Level S (target)**: Automated test passing **+** human-intuitively-verifiable comparative evidence (e.g., test passes + before/after screenshots)
+   - **Level S (target)**: Automated test passing **+** human-intuitively-verifiable evidence (e.g., test passes + post-change key screenshots)
    - **Level A**: Run existing tests or write and run new targeted tests → Record test commands and full output
    - **Level B**: Run verification commands, invoke tools (MCP/Skill), or execute scripts → Record commands and results
    - **Level C**: Observe runtime behavior (HTTP responses, file changes, process status) → Record observed outcomes
@@ -96,9 +103,9 @@ This workflow is **strictly sequential**. Do not proceed to the next phase until
 
 3. **Record results**: For each scenario, mark pass/fail with evidence.
 
-4. **Save non-text evidence**: For before/after screenshots, log files, and other human-intuitively-verifiable evidence,
-   save them to the `PROJECT_STATE/ATDD/<feature-name>/` directory (e.g., `before-tc1.png`, `after-tc1.png`, `evidence-tc2.log`).
-   When changes are human-visible, proactively collect both before and after comparative evidence, not just post-change evidence.
+4. **Save non-text evidence**: For post-change key screenshots, log files, and other human-intuitively-verifiable evidence,
+   save them to the `PROJECT_STATE/ATDD/<feature-name>/` directory (e.g., `tc1-homepage.jpeg`, `evidence-tc2.log`).
+   When changes are human-visible, proactively collect post-change key screenshots as evidence.
 
 5. **If any scenario fails verification**:
    - Investigate the root cause
@@ -116,7 +123,7 @@ This workflow is **strictly sequential**. Do not proceed to the next phase until
 2. **Update `PROJECT_STATE/ATDD/<feature-name>/acceptance.md`**, filling the draft's empty fields with actual results:
    - Fill in each test case's **Result** (Pass/Fail)
    - Fill in each test case's **Evidence** (test output, log snippets, etc.)
-   - For non-text evidence files (screenshots, logs, etc.), reference them using relative paths in the evidence field: `See [evidence file](./evidence-tc1.png)`
+   - For non-text evidence files (screenshots, logs, etc.), reference them using relative paths in the evidence field: `See [evidence file](./evidence-tc1.jpeg)`
    - Fill in the summary table: Scenario → Test Case → Result
    - Note any limitations in the remarks (e.g., skipped scenarios, conditions that could not be fully verified)
 
@@ -131,9 +138,8 @@ PROJECT_STATE/
   ATDD/
     <feature-name>/
       acceptance.md                          # ATDD acceptance document (Phase 2 draft → Phase 5 finalized)
-      before-tc1.png                         # Pre-change evidence (screenshot/data)
-      after-tc1.png                          # Post-change evidence (screenshot/data)
-      evidence-tc2.log                       # Other evidence file (logs, etc.)
+      tc1-homepage.jpeg                       # Key screenshots (test case number + descriptive name)
+      evidence-tc2.log                       # Other evidence files (logs, etc.)
 ```
 
 ## Reference Files

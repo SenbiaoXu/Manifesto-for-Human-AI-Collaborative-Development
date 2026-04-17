@@ -265,6 +265,6 @@ Below is a typical human-AI collaborative development cycle, showing how the thr
 ```
 
 In this cycle:
-- **Human** participation is concentrated at **decision points**: confirming module partitioning, reviewing BDD, reviewing ATDD drafts. The rest of the time, the agent executes autonomously.
+- **Human** participation is concentrated at **decision points**: confirming module partitioning, reviewing BDD, reviewing ATDD drafts. Implementation and self-testing are executed autonomously by the agent. The human then performs the final acceptance based on evidence.
 - **Agent** execution is always constrained by **behavioral contracts**, and proves execution quality through **evidence**.
 - **PROJECT_STATE** serves as the bond of shared understanding, ensuring cross-session context continuity.

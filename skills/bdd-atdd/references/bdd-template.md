@@ -57,7 +57,10 @@ And [additional result]
 5. Each scenario should test only one behavior. If a scenario tests multiple things, split it into separate independent scenarios.
 6. Use "And" to chain multiple preconditions or results within a single scenario.
 7. Only use a "Background" section when multiple scenarios share the same precondition setup.
-8. **BDD vs ATDD responsibility division**:
+8. **Scenarios should be as comprehensive as possible**: Cover all happy path, boundary, and error cases. Some scenarios cannot be automatically verified by the Agent (e.g., visual effects, cross-system verification, design mockup comparison, etc.) — these scenarios should still be written in BDD and verified by humans in ATDD.
+   - Do not omit scenarios just because "the Agent can't verify them" — BDD describes expected behavior; verification method is ATDD's concern
+   - Common human-only-verifiable scenarios: design mockup fidelity (color, spacing, layout), visual effects (animation smoothness), dependency on specific external databases
+9. **BDD vs ATDD responsibility division**:
    - BDD answers "**what behavior is expected**" — describes the complete interaction process and expected results in detail (operation paths, data input, UI changes, state changes)
    - ATDD answers "**how to verify that behavior**" — defines specific technical verification methods through verification approaches and test commands
    - If a description requires technical background to understand, it likely belongs in ATDD, not BDD

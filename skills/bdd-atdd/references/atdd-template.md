@@ -25,8 +25,9 @@ Every ATDD document **must** follow this structure:
 
 ### Test Case 1: [Test Name]
 **Corresponding BDD Scenario**: [Scenario name, e.g., "Successful login with valid credentials"]
+**Verifier**: Agent auto-verification / Human verification (for scenarios only verifiable by humans, e.g., visual effects, cross-system verification, design mockup comparison, etc.)
 
-**Verification Approach**: [The thought process and procedure for obtaining evidence — how to verify the behavior of this scenario, including specific operation paths, verification methods, and observation points]
+**Verification Approach**: [The thought process and procedure for obtaining evidence — how to verify the behavior of this scenario, including specific operation paths, verification methods, and observation points. If human verification, describe what the human needs to focus on]
 **Test Command** (if applicable): [Specific command]
 **Test Tool** (if applicable): [Tool name]
 
@@ -40,10 +41,10 @@ Every ATDD document **must** follow this structure:
 
 ## Summary
 
-| BDD Scenario | Test Case | Result |
-|---|---|---|
-| [Scenario Name] | TC-1 | (Leave empty in draft phase) |
-| ... | ... | ... |
+| BDD Scenario | Test Case | Verifier | Result |
+|---|---|---|---|
+| [Scenario Name] | TC-1 | Agent / Human | (Leave empty in draft phase) |
+| ... | ... | ... | ... |
 
 **Total Scenarios**: [N]
 **Passed**: [N] (Leave empty in draft phase)
@@ -60,9 +61,14 @@ When changes are human-visible, proactively collect post-change key screenshots 
 - General evidence: `evidence-tc3.log`, `evidence-tc3.json`
 
 Reference them using relative paths in the acceptance.md evidence field:
-```
-See [homepage screenshot](./tc1-homepage.jpeg)
-```
+- **Image evidence** (`.jpeg`, `.png`, `.gif`) uses Markdown image syntax for direct preview:
+  ```
+  ![Homepage screenshot](./tc1-homepage.jpeg)
+  ```
+- **Non-image evidence** (`.log`, `.json`, `.csv`, etc.) uses regular link syntax:
+  ```
+  See [response data](./evidence-tc3.json)
+  ```
 
 Supported evidence file types:
 - Screenshots: `.jpeg`, `.png`, `.gif`
@@ -95,7 +101,7 @@ ATDD traces BDD scenarios via the "Corresponding BDD Scenario" field, without re
 1. Fill in each test case's **Result** (Pass/Fail) based on actual self-verification outcomes.
 2. Fill in each test case's **Evidence** (test output, log snippets/data, screenshots, etc.).
 3. **Check human verifiability**: For each test case, review whether its evidence allows a person to judge correctness without reading code. When changes are human-visible (UI/API/data output, etc.), **must** include key screenshots (post-change screenshots, actual request/response examples, input/output mappings, etc.) to reach evidence Level S.
-4. For non-text evidence files, use relative path references in the evidence field (e.g., `See [screenshot](./evidence-tc1.jpeg)`). Screenshots should be named using the `tc<number>-<description>.jpeg` format.
+4. For non-text evidence files, use relative path references in the evidence field. **Image evidence uses Markdown image syntax** (e.g., `![Homepage screenshot](./evidence-tc1.jpeg)`), non-image evidence uses link syntax (e.g., `See [log](./evidence-tc2.log)`). Screenshots should be named using the `tc<number>-<description>.jpeg` format.
 5. Fill in the summary table.
 6. Record results truthfully. If a scenario cannot be verified through automated testing, state this honestly and describe what was checked.
 7. Note any limitations in the remarks.
@@ -117,48 +123,69 @@ PROJECT_STATE/BDD/user-email-login.md
 
 ### Test Case 1: Valid credentials login succeeds
 **Corresponding BDD Scenario**: Successful login with valid credentials
+**Verifier**: Agent auto-verification
 
 **Verification Approach**: Use pytest to send a POST /api/login request (request body contains email and password), assert response status code 200 and that the response body contains a token field, decode JWT to verify the exp claim matches the 24-hour validity period
 **Test Command**: `pytest tests/test_login.py::test_valid_login -v`
 
 **Result**: Pass
-**Evidence**: Test output shows "assert response.status_code == 200" assertion passed. JWT decoded with correct exp claim. See [test output screenshot](./evidence-tc1.jpeg)
+**Evidence**: Test output shows "assert response.status_code == 200" assertion passed. JWT decoded with correct exp claim.
+![Test output screenshot](./evidence-tc1.jpeg)
 
 ---
 
 ### Test Case 2: Malformed email is rejected
 **Corresponding BDD Scenario**: Login with invalid email format
+**Verifier**: Agent auto-verification
 
 **Verification Approach**: Use pytest to send a POST /api/login request (with invalid email format), assert response status code 400 and that the response body contains the "Invalid email format" error message, confirm that the validation layer rejects before the database query
 **Test Command**: `pytest tests/test_login.py::test_malformed_email -v`
 
 **Result**: Pass
-**Evidence**: Validation layer rejected the request before the database query. See [test output screenshot](./evidence-tc2.jpeg)
+**Evidence**: Validation layer rejected the request before the database query.
+![Test output screenshot](./evidence-tc2.jpeg)
 
 ---
 
 ### Test Case 3: Database unreachable returns service unavailable error
 **Corresponding BDD Scenario**: Login when service is unavailable
+**Verifier**: Agent auto-verification
 
 **Verification Approach**: Simulate unavailable state by stopping the database container via docker stop, use curl to send a login request with valid credentials, check response status code 503 and whether the error message is "Service temporarily unavailable", restart the database after verification
 **Test Tool**: curl, docker
 
 **Result**: Pass
-**Evidence**: After stopping the database, request sent via curl. Received 503 response with correct error message body. Database restarted after testing. See [response screenshot](./evidence-tc3.jpeg)
+**Evidence**: After stopping the database, request sent via curl. Received 503 response with correct error message body. Database restarted after testing.
+![Response screenshot](./evidence-tc3.jpeg)
+
+---
+
+### Test Case 4: Login page visual presentation is correct
+**Corresponding BDD Scenario**: Successful login with valid credentials (visual verification portion)
+**Verifier**: Human verification
+
+**Verification Approach**: Check the visual presentation of the login page — input field alignment, button styles, error message color and position consistency with the design mockup. Agent provides page screenshot for human confirmation.
+**Points for human attention**: Input field spacing, whether error message text color is red, overall layout consistency with design mockup
+
+**Result**: Pending human confirmation
+**Evidence**:
+![Login page screenshot](./evidence-tc4-login-page.jpeg)
 
 ---
 
 ## Summary
 
-| BDD Scenario | Test Case | Result |
-|---|---|---|
-| Successful login with valid credentials | TC-1 | Pass |
-| Login with invalid email format | TC-2 | Pass |
-| Login when service is unavailable | TC-3 | Pass |
+| BDD Scenario | Test Case | Verifier | Result |
+|---|---|---|---|
+| Successful login with valid credentials | TC-1 | Agent | Pass |
+| Login with invalid email format | TC-2 | Agent | Pass |
+| Login when service is unavailable | TC-3 | Agent | Pass |
+| Login page visual presentation is correct | TC-4 | Human | Pending human confirmation |
 
-**Total Scenarios**: 3
+**Total Scenarios**: 4
 **Passed**: 3
 **Failed**: 0
+**Pending human confirmation**: 1
 ```
 
 ## Complete Example (Draft State)
@@ -180,6 +207,7 @@ PROJECT_STATE/BDD/user-email-login.md
 
 ### Test Case 1: Valid credentials login succeeds
 **Corresponding BDD Scenario**: Successful login with valid credentials
+**Verifier**: Agent auto-verification
 
 **Verification Approach**: Use pytest to send a POST /api/login request (request body contains email and password), assert response status code 200 and that the response body contains a token field, decode JWT to verify the exp claim matches the 24-hour validity period
 **Test Command** (Planned): `pytest tests/test_login.py::test_valid_login -v`
@@ -191,6 +219,7 @@ PROJECT_STATE/BDD/user-email-login.md
 
 ### Test Case 2: Malformed email is rejected
 **Corresponding BDD Scenario**: Login with invalid email format
+**Verifier**: Agent auto-verification
 
 **Verification Approach**: Use pytest to send a POST /api/login request (with invalid email format), assert response status code 400 and that the response body contains the "Invalid email format" error message
 **Test Command** (Planned): `pytest tests/test_login.py::test_malformed_email -v`
@@ -202,6 +231,7 @@ PROJECT_STATE/BDD/user-email-login.md
 
 ### Test Case 3: Database unreachable returns service unavailable error
 **Corresponding BDD Scenario**: Login when service is unavailable
+**Verifier**: Agent auto-verification
 
 **Verification Approach**: Simulate unavailable state by stopping the database container via docker stop, use curl to send a login request with valid credentials, check response status code 503 and error message
 **Test Tool** (Planned): curl, docker
@@ -211,15 +241,29 @@ PROJECT_STATE/BDD/user-email-login.md
 
 ---
 
+### Test Case 4: Login page visual presentation is correct
+**Corresponding BDD Scenario**: Successful login with valid credentials (visual verification portion)
+**Verifier**: Human verification
+
+**Verification Approach**: Check the visual presentation of the login page — input field alignment, button styles, error message color and position consistency with the design mockup. Agent provides page screenshot for human confirmation
+**Points for human attention**: Input field spacing, whether error message text color is red, overall layout consistency with design mockup
+
+**Result**: (Pending human confirmation)
+**Evidence**: (To be collected)
+
+---
+
 ## Summary
 
-| BDD Scenario | Test Case | Result |
-|---|---|---|
-| Successful login with valid credentials | TC-1 | (Pending verification) |
-| Login with invalid email format | TC-2 | (Pending verification) |
-| Login when service is unavailable | TC-3 | (Pending verification) |
+| BDD Scenario | Test Case | Verifier | Result |
+|---|---|---|---|
+| Successful login with valid credentials | TC-1 | Agent | (Pending verification) |
+| Login with invalid email format | TC-2 | Agent | (Pending verification) |
+| Login when service is unavailable | TC-3 | Agent | (Pending verification) |
+| Login page visual presentation is correct | TC-4 | Human | (Pending human confirmation) |
 
-**Total Scenarios**: 3
+**Total Scenarios**: 4
 **Passed**: (Pending verification)
 **Failed**: (Pending verification)
+**Pending human confirmation**: 1
 ```

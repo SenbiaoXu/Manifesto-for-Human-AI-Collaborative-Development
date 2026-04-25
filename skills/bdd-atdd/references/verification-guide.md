@@ -170,3 +170,22 @@ Some scenarios cannot be verified in the current environment (e.g., they require
 2. Explain why it cannot be verified.
 3. Describe how it should ideally be verified (the ideal test setup).
 4. Record any partial verification that was possible.
+
+## Handling Human-Only-Verifiable Scenarios
+
+Some scenarios are inherently only verifiable by humans (e.g., visual effects, cross-system verification, design mockup comparison, etc.), where the Agent cannot automatically judge pass/fail. For such scenarios:
+
+1. **Label as "Verifier: Human verification" in the ATDD**, clearly distinguishing between Agent-verifiable and human-only-verifiable scenarios.
+2. **In the verification approach, describe what the human needs to focus on**: List specific points the human needs to check (e.g., "input field spacing", "error message color", "button position").
+3. **Agent provides supporting evidence**: Collect key screenshots, render results, etc. as much as possible for human reference.
+4. **Mark the result as "Pending human confirmation"**: The Agent should not mark the result as passed or failed on its own.
+5. **Count "Pending human confirmation" separately in the summary table** to ensure nothing is missed.
+
+### Typical Human-Only-Verifiable Scenarios
+
+| Scenario Type | Description | Points for Human Attention |
+|---|---|---|
+| Design mockup comparison | Whether page rendering matches the design mockup | Color, spacing, typography, layout |
+| Visual effects | Animation smoothness, natural interaction | Animation duration, transition effects, responsiveness |
+| Cross-system verification | Requires integration with specific systems | Specific databases, specific user permissions, etc. |
+| Audio/Video | Media content quality | Audio quality, visual quality, synchronization |

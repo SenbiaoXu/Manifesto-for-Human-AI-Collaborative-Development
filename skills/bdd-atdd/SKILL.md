@@ -10,7 +10,8 @@ implement code, self-verify, and finally finalize the ATDD document based on act
 
 ## Principles
 - **Requirements clarification**: If a user request has multiple interpretations, present them for the user to choose. If boundary conditions are uncertain, ask for clarification
-- **Only write necessary scenarios**: Each BDD scenario must correspond to a clear requirement. Do not add scenarios the user didn't request on your own
+- **Only write necessary scenarios**: Each BDD scenario must correspond to a clear requirement. For scenarios the user didn't explicitly request, you must confirm with the user before adding them
+- **Distinguish verification methods**: Differentiate between scenarios the Agent can automatically verify and scenarios only humans can effectively verify
 - **Only change what must be changed**: During implementation, only modify code related to the current BDD scenarios — do not take the opportunity to refactor adjacent code or "improve" style
 - **Evidence serves human credibility judgment**: During verification, prioritize human-directly-verifiable evidence (key screenshots, actual output), not just executable evidence (test passed, command succeeded). When changes are human-visible, you must supplement with human-intuitively-verifiable evidence
 
@@ -41,12 +42,14 @@ This workflow is **strictly sequential**. Do not proceed to the next phase until
    - If it already exists, use it directly. If not, create `PROJECT_STATE/` with `BDD/` and `ATDD/` subdirectories
 
 5. **Read the BDD template and offer multiple writing options for the user to choose from**, the BDD template is located at `references/bdd-template.md` in this skill's directory.
-   **Be sure to propose 2-3 BDD writing options for the user to choose from, and wait for the user to confirm before writing the BDD**
+   - From a business perspective, propose 2-3 BDD writing options from different viewpoints for the user to choose from
+   - After determining the writing approach, think about which scenarios need to be included. For scenarios where you're unsure whether they're needed, be sure to consult the user for confirmation
+   **Be sure to wait for the user to confirm before writing the BDD**
 
 6. **Create `PROJECT_STATE/BDD/<feature-name>.md`**, containing:
    - A Feature title using the requirement name as the heading
    - A brief description
-   - All business scenarios: categorize all scenarios from a business perspective
+   - All business scenarios: categorize all scenarios from a business perspective (including both Agent-verifiable scenarios and human-only-verifiable scenarios)
    - Each scenario using Given/When/Then format, **must describe the complete interaction process in detail** (operation paths, data input, UI/state changes) — because BDD is the only document describing functional behavior, ATDD will not repeat Given/When/Then
    - **Must use business/domain language** — language understandable by non-technical stakeholders; technical implementation details (command parameters, API paths, data structures, etc.) are left for ATDD
 
@@ -69,6 +72,7 @@ This workflow is **strictly sequential**. Do not proceed to the next phase until
    - A reference to the corresponding BDD document path
    - Verification strategy (specific date, strategy method, verification approach)
    - For each BDD scenario: **planned** test cases, tracing source via "corresponding BDD scenario", including verification approach (method and process for obtaining evidence), planned test commands
+   - For each test case, label the **Verifier**: Agent auto-verification / Human verification. Scenarios only verifiable by humans (e.g., visual effects, interaction experience, accessibility) should be labeled as "Human verification", with the verification approach describing what the human needs to focus on
    - Leave the **Result** field empty for each test case (to be filled after self-verification)
    - Leave the **Evidence** field empty for each test case (to be filled after self-verification)
    - Leave the summary table empty (to be filled after self-verification)
@@ -113,6 +117,7 @@ This workflow is **strictly sequential**. Do not proceed to the next phase until
    - Re-verify that scenario (and any other scenarios the fix may affect)
 
 6. **Do not skip any scenario**, and do not mark any scenario as passed without evidence.
+7. **For scenarios labeled as "Human verification"**: The Agent should provide supporting information (e.g., key screenshots, render results) as much as possible for human judgment, but should not mark them as passed or failed on its own. Instead, mark them as "Pending human confirmation" in the ATDD and attach the supporting evidence.
 
 ### Phase 5: ATDD Finalization — Complete Acceptance Documentation
 
@@ -123,11 +128,12 @@ This workflow is **strictly sequential**. Do not proceed to the next phase until
 2. **Update `PROJECT_STATE/ATDD/<feature-name>/acceptance.md`**, filling the draft's empty fields with actual results:
    - Fill in each test case's **Result** (Pass/Fail)
    - Fill in each test case's **Evidence** (test output, log snippets, etc.)
-   - For non-text evidence files (screenshots, logs, etc.), reference them using relative paths in the evidence field: `See [evidence file](./evidence-tc1.jpeg)`
+   - For non-text evidence files (screenshots, logs, etc.), reference them using relative paths in the evidence field. **Image evidence uses Markdown image syntax** (e.g., `![Response screenshot](./evidence-tc1.jpeg)`), non-image evidence uses link syntax (e.g., `See [log](./evidence-tc2.log)`)
    - Fill in the summary table: Scenario → Test Case → Result
    - Note any limitations in the remarks (e.g., skipped scenarios, conditions that could not be fully verified)
 
 3. **Be honest and complete**. If a scenario genuinely cannot be verified, state so truthfully.
+4. **For scenarios labeled as "Human verification"**: Mark the result as "Pending human confirmation" in the summary table, and describe the specific points the human needs to focus on in the remarks. Supporting evidence provided by the Agent (e.g., screenshots) should be attached for human reference.
 
 ## Quick Reference — File Locations
 
